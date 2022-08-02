@@ -11,7 +11,6 @@ TODO: 図を入れる
 == 手を動かして実践
 
 それでは、チェックインを実際に手を動かして実践してみましょう。
-
 まず、適当なディレクトリを作成してVSCodeで開きます。
 
 //cmd{
@@ -27,7 +26,7 @@ $ git init
 $ echo "My first file" > test.txt
 //}
 
-@<code>{git status}コマンドでリポジトリの状態が分かります。
+@<code>{git status}コマンドでリポジトリの状態を確認します。
 
 //cmd{
 $ git status
@@ -42,12 +41,162 @@ Untracked files:
 nothing added to commit but untracked files present (use "git add" to track)
 //}
 
-== コミットグラフとは
+ステージしてから、再度@<code>{git status}を実行してみましょう。
+
+//cmd{
+$ git add .
+$ git status
+On branch main
+
+No commits yet
+
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+        new file:   test.txt
+
+//}
+
+また、@<code>{git ls-files --stage}でインデックスにあるファイルを確認することができます。
+
+//cmd{
+$ git ls-files --stage
+100644 363d8b784900d74b3159e8e93a651c0db42629ef 0       test.txt
+//}
+
+最後に、@<code>{git commit}でリポジトリにチェックインします。
+
+//cmd{
+$ git commit -m 'first commit'
+[main (root-commit) 87ca1d1] first commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 test.txt
+//}
+
+VSCodeの左下のGit Graphをクリックすると、先程作成したコミットを確認できます。
+
+TODO: 画像を入れる
+
+=== 練習問題2-1
+
+ファイル`test2.txt`を作成して、コミットしてみましょう。
+コミットメッセージは'add test2.txt'とします。
 
 == ワーキングツリーとインデックス
 
+== コミットグラフとは
+
+コミット同士を、親コミットへの参照でつないたものをコミットグラフといいます。
+親コミットとは、直前に作成したコミットのことです。
+
+コミットグラフは、ブランチやマージなどのgitの基本的な概念を理解するために重要です。
+
+コミットグラフは@<code>{git log}コマンドでも確認できます。
+VSCodeの拡張機能のGit Graphを使うと、コマンドを実行した際にコミットグラフがリアルタイムに変更されます。
+
 == コミットとブランチ
 
-== マージ、2種類のマージ
+ブランチは、gitで履歴を分岐させるときに使用するものです。
+ブランチ（= 枝）という名前から、ブランチが複数のコミットを表していると勘違いしやすいです。
+しかし、ブランチの正体は単一のコミットへの参照です。
+コミットについているラベルのようなものと考えると分かりやすいかもしれません。
+
+TODO: 図を入れる
+
+それでは、ブランチを作成してコミットしてみましょう。
+ブランチの確認と作成は@<code>{git branch}、ブランチ間の移動は@<code>{git checkout}または@<code>{git switch}コマンドを使います。
+また、@<code>{git checkout -b}でブランチの作成と移動を同時に行えます。
+
+//cmd{
+$ git branch # ブランチを確認
+* main
+
+$ git branch practice1 # practice1ブランチを作成
+
+$ git branch
+* main
+  practice1
+
+$ git checkout practice1 # practice1ブランチに移動
+
+$ git branch
+  main
+* practice1
+//}
+
+@<code>{*}のマークが移動したことから、practice1ブランチに移動できたことが分かります。
+
+適当にファイルを変更してコミットしてみます。
+
+//cmd{
+$ echo 'Hello' >> test.txt
+$ git add .
+$ git commit -m 'test.txtにHelloを追加'
+//}
+
+コミットグラフを確認してみます。
+
+TODO: 図を入れる
+
+新たにコミットが作成され、practice1ブランチが移動しました。以前いたmainブランチは移動していません。
+このように、あるブランチでコミットすると、そのブランチが新規コミット（次のコミット）を指し示すように移動します。
+
+== マージと2種類のマージ
+
+あるブランチで作成したコミットを別のブランチに取り込むときは、@<code>{git merge}コマンドを使います。
+
+gitのマージには、早送りマージ（Fast-forward merge）と早送りでないマージ（Non Fast-forward merge）2種類あります。
+
+早送りマージは、マージ元のブランチがマージ先のブランチへと移動するマージです。
+マージ先ブランチの親コミットをたどってマージ元ブランチへとたどり着けるときに行えます。
+gitは早送りマージが可能なときは早送りマージを行います。
+
+TODO: 図を入れる
+
+早送りでないマージでは、新しくコミットが作成されて2つのブランチが合流します。
+新しく作成されるコミットのことをマージコミットといいます。
+
+
+== マージをやってみる
+
+@<code>{git merge}で1つのブランチを指定すると、そのブランチと現在のブランチがマージされます。
+
+mainブランチに戻ってから、practice1ブランチをマージしてみましょう。
+
+//cmd{
+$ git checkout main
+$ git merge practice1
+Updating 21180e3..09471f0
+Fast-forward
+ test.txt | 1 +
+ 1 file changed, 1 insertion(+)
+//}
+
+Fast-forwardと書かれていることから、早送りマージが行われたことが分かります。
+次は早送りでないマージをしてみましょう。
+@<code>{--no-ff}オプションをつけることで、早送りマージが可能なときも早送りでないマージを強制できます。
+
+//cmd{
+$ git checkout -b practice2
+$ echo 'Hello2' > test.txt
+$ git add . && git commit -m 'test.txtにHello2を追加'
+$ git checkout main
+$ git merge --no-ff practice2
+Merge made by the 'recursive' strategy.
+ test.txt | 1 +
+ 1 file changed, 1 insertion(+)
+//}
+
+mergeコマンドを実行するとエディタが開くため、保存して終了しましょう。
+コミットグラフを確認すると、マージコミットが作成されてブランチが合流したことが分かります。
+
+=== 練習問題2-2
+
+以下のコミットグラフを作成してみてください。
+
+=== 練習問題2-3
+
+以下のコミットグラフを作成してみてください。
 
 == リベース
+
+TODO:
