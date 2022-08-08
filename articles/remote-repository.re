@@ -14,12 +14,14 @@ GitHubアカウントを作成していない場合は作成してください�
 
 GitHubにログインしたら、左上の+アイコンのNew Repositoryをクリックします。
 
-TODO: 画像を入れる
+//image[create-repository][リポジトリを作成する]{
+//}
 
 Repository nameに「git-practice」と入力し、ページ下部のCreate repositoryボタンをクリックします。
 リポジトリを作成すると、以下のようなページが表示されます。
 
-TODO: 画像を入れる
+//image[empty-remote-repository][空のリモートリポジトリ]{
+//}
 
 == リモートリポジトリへのアップロード
 
@@ -141,7 +143,7 @@ $ git merge origin/main
 //}
 
 pullは指定したブランチを最新の状態にするコマンドです。
-pullは2つのコマンドを同時に使うため、挙動がやや複雑なコマンドです。
+pullは2つのコマンドの処理が同時に行われるため、挙動がやや複雑なコマンドです。
 そのため、はじめはpullを使わずfetchとmergeを使ってみるのがオススメです。
 
 == 上流ブランチ
