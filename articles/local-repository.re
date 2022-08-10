@@ -3,8 +3,8 @@
 == 基本的な用語の説明
 
 gitではチェックインする（履歴を登録する）前に、チェックインするファイルを選択することができます。
-この選択したファイルが記録される場所のことを、インデックスまたはステージングエリアといいます。
-チェックインする場所のことをリポジトリといいます。また、リポジトリに履歴を登録することをコミットするといいます。
+選択したファイルが記録される場所のことを、インデックスまたはステージングエリアといいます。
+また、チェックインする場所のことをリポジトリといいます。また、リポジトリに履歴を登録することをコミットするといいます。
 インデックスの仕組みによって、記録したいファイルのみを選択してリポジトリに登録することができます。
 
 TODO: 図を入れる
@@ -42,6 +42,7 @@ Untracked files:
 nothing added to commit but untracked files present (use "git add" to track)
 //}
 
+追加したファイルがUntracked files（未追跡のファイル）になっています。
 ステージしてから、再度@<code>{git status}を実行してみましょう。
 
 //cmd{
@@ -57,6 +58,8 @@ Changes to be committed:
 
 //}
 
+Changes to be commitedに変わりました。
+
 また、@<code>{git ls-files --stage}でインデックスにあるファイルを確認することができます。
 test.txtがインデックスに登録されたことが分かります。
 
@@ -66,6 +69,7 @@ $ git ls-files --stage
 //}
 
 最後に、@<code>{git commit}でリポジトリにチェックインします。
+@<code>{-m}でコミットメッセージを指定します。
 
 //cmd{
 $ git commit -m 'first commit'
@@ -74,9 +78,11 @@ $ git commit -m 'first commit'
  create mode 100644 test.txt
 //}
 
+これでコミットが完了しました。
 VSCodeの左下のGit Graphをクリックすると、先程作成したコミットを確認できます。
 
-TODO: 画像を入れる
+//image[first-commit][最初のコミット]{
+//}
 
 === 練習問題2-1
 
@@ -84,6 +90,12 @@ TODO: 画像を入れる
 コミットメッセージは'add test2.txt'とします。
 
 == コミットとは
+
+コミットの実態は、gitで管理しているファイルのスナップショットです。
+addで差分を登録してからコミットするため、コミットは差分が記録されていると誤解されがちです。
+しかし、コミットはコミットした時点でのすべてのファイルの状態を表しています。
+
+TODO: コミットは差分ではなくスナップショットの図を入れる
 
 == コミットグラフとは
 
@@ -101,8 +113,8 @@ $ git log --graph --oneline
 * 87ca1d1 first commit
 //}
 
-VSCodeの拡張機能のGit Graphを使うと、コマンドを実行した際にコミットグラフがリアルタイムに変更されます。
-また、履歴が分岐して複雑になったときはCUIより見やすいです。
+VSCodeの拡張機能のGit Graphを使うと、コマンドを実行した際にコミットグラフがリアルタイムに変化します。
+また、履歴が分岐して複雑になったときは@<code>{git log}コマンドより見やすいです。
 そのため、はじめはGit Graphを使って操作の結果を確認することをおすすめします。
 
 == コミットとブランチ
@@ -112,10 +124,10 @@ VSCodeの拡張機能のGit Graphを使うと、コマンドを実行した際�
 しかし、ブランチの正体は単一のコミットへの参照です。
 コミットについているラベルのようなものと考えると分かりやすいかもしれません。
 
-TODO: 図を入れる
+TODO: ブランチはコミットへの参照の図を入れる
 
 それでは、ブランチを作成してコミットしてみましょう。
-ブランチの確認と作成は@<code>{git branch}を使います。ブランチ間の移動は@<code>{git checkout}または@<code>{git switch}コマンドを使います。
+ブランチの確認と作成は@<code>{git branch}コマンドを使います。ブランチ間の移動は@<code>{git checkout}または@<code>{git switch}コマンドを使います。
 また、@<code>{git checkout -b}でブランチの作成と移動を同時に行えます。
 
 //cmd{
@@ -156,13 +168,15 @@ TODO: 図を入れる
 
 以下のコミットグラフを作成してみてください。
 
-//cmd{
-$ git log --all --graph --oneline
-* fd0ea24 (HEAD -> main) message4
-| * a1b7cf9 (practice1) message3
+//list[practice2-2][練習問題2-2]{
+* fd0ea24 (HEAD -> main) commit4
+| * a1b7cf9 (practice) commit3
 |/
-* 1adc8e4 message2
-* c74468a message1
+* 1adc8e4 commit2
+* c74468a first commit
+//}
+
+//image[practice-2-2][Git Graph]{
 //}
 
 == マージと2種類のマージ
@@ -179,7 +193,6 @@ TODO: 図を入れる
 
 早送りでないマージでは、新しくコミットが作成されて2つのブランチが合流します。
 新しく作成されるコミットのことをマージコミットといいます。
-
 
 == マージをやってみる
 
@@ -224,13 +237,16 @@ mergeコマンドを実行するとエディタが開くため、保存して終
 
 以下のコミットグラフを作成してみてください。
 
-//cmd{
-* 0fca72d (HEAD -> practice2) message4
-*   4990332 (main) message3
+//list[practice-2-3][練習問題2-3]{
+* 0fca72d (HEAD -> practice2) commit4
+*   4990332 (main) commit3
 |\
-| * 87f630b (practice1) message2
+| * 87f630b (practice1) commit2
 |/
-* e513abf message1
+* e513abf first commit
+//}
+
+//image[practice-2-3][Git Graph]{
 //}
 
 == リベース
