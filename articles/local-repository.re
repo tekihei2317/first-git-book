@@ -7,7 +7,8 @@ gitではチェックインする（履歴を登録する）前に、チェッ�
 また、チェックインする場所のことをリポジトリといいます。また、リポジトリに履歴を登録することをコミットするといいます。
 インデックスの仕組みによって、記録したいファイルのみを選択してリポジトリに登録することができます。
 
-TODO: 図を入れる
+//image[checkin-flow][チェックインの流れ]{
+//}
 
 == 手を動かして実践
 
@@ -252,3 +253,79 @@ mergeコマンドを実行するとエディタが開くため、保存して終
 == リベース
 
 TODO:
+
+== 練習問題の解答
+
+=== 練習問題2-1の解答
+
+@<code>{git add}でインデックスに追加してから、@<code>{git commit}でコミットします。
+
+//cmd{
+$ touch test2.txt
+$ git add .
+$ git commit -m 'add test2.txt'
+//}
+
+=== 練習問題2-2の解答
+
+commit2でmainブランチとpracticeブランチが分岐しているため、
+mainブランチでcommit2まで作成してからpracticeブランチを作成します。
+
+//cmd{
+$ git commit --allow-empty -m 'commit2'
+$ git checkout -b practice
+$ git log --graph --oneline
+* 2b12ccf (HEAD -> practice, main) commit2
+* f1dd836 (origin/main, origin/HEAD) first commit
+//}
+
+
+ブランチを作成したら、枝分かれするようにそれぞれのブランチでコミットしましょう。
+
+//cmd{
+$ git commit --allow-empty -m 'commit3'
+$ git checkout main
+$ git commit --allow-empty -m 'commit4'
+//}
+
+これでコミットグラフは完成です。
+
+//cmd{
+$ git log --graph --oneline --all
+* df297c3 (HEAD -> main) commit4
+| * 8c115e9 (practice) commit3
+|/
+* 2b12ccf commit2
+* f1dd836 (origin/main, origin/HEAD) first commit
+//}
+
+=== 練習問題2-3の解答
+
+コミットグラフを見ると、practice1ブランチをmainブランチに早送りでないマージをしていることが分かります。
+
+まず、practice1ブランチを作成してコミットします。
+
+//cmd{
+$ git checkout -b practice1
+$ git commit --allow-empty -m 'commit2'
+//}
+
+次に、mainブランチにpractice1ブランチをNon Fast-Forwardマージします。
+
+//cmd{
+$ git checkout main
+$ git merge --no-ff -m 'commit3' practice1
+$ git log --graph --oneline
+*   2747816 (HEAD -> main) commit3
+|\
+| * 86f624d (practice1) commit2
+|/
+* e8581d0 (origin/main, origin/HEAD) first commit
+//}
+
+最後にpractice2ブランチでコミットして完成です。
+
+//cmd{
+$ git checkout -b practice2
+$ git commit --allow-empty -m 'commit4'
+//}
