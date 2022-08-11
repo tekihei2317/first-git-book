@@ -90,13 +90,21 @@ VSCodeの左下のGit Graphをクリックすると、先程作成したコミ�
 ファイル`test2.txt`を作成して、コミットしてみましょう。
 コミットメッセージは'add test2.txt'とします。
 
+解答: @<hd>{練習問題の解答}
+
 == コミットとは
 
 コミットの実態は、gitで管理しているファイルのスナップショットです。
 addで差分を登録してからコミットするため、コミットは差分が記録されていると誤解されがちです。
-しかし、コミットはコミットした時点でのすべてのファイルの状態を表しています。
+しかし、コミットはコミットした時点でのすべてのファイルの状態を含んでいます。
 
-TODO: コミットは差分ではなくスナップショットの図を入れる
+//image[commit-is-snapshot][コミットはスナップショット]{
+//}
+
+具体的には、コミットをする際に各ファイルが圧縮され、Blobオブジェクトとしてリポジトリに保存されます。
+コミットは、Blobオブジェクトへの参照を持っています。@<fn>{git-object}
+
+//footnote[git-object][Gitのオブジェクトについてはこちらの記事が分かりやすいです。@<href>{https://zenn.dev/kaityo256/articles/objects_of_git}]
 
 == コミットグラフとは
 
@@ -115,17 +123,19 @@ $ git log --graph --oneline
 //}
 
 VSCodeの拡張機能のGit Graphを使うと、コマンドを実行した際にコミットグラフがリアルタイムに変化します。
-また、履歴が分岐して複雑になったときは@<code>{git log}コマンドより見やすいです。
+また、履歴が分岐して複雑になったときに、@<code>{git log}コマンドよりコミットグラフの状態を把握しやすいです。
 そのため、はじめはGit Graphを使って操作の結果を確認することをおすすめします。
 
 == コミットとブランチ
 
 ブランチは、gitで履歴を分岐させるときに使用するものです。
+ブランチは、複数人で作業する場合や、作業単位を分かりやすくするのに役立ちます。
 ブランチ（= 枝）という名前から、ブランチが複数のコミットを表していると勘違いしやすいです。
 しかし、ブランチの正体は単一のコミットへの参照です。
 コミットについているラベルのようなものと考えると分かりやすいかもしれません。
 
-TODO: ブランチはコミットへの参照の図を入れる
+//image[branch-is-reference][ブランチは単一のコミットへの参照]{
+//}
 
 それでは、ブランチを作成してコミットしてみましょう。
 ブランチの確認と作成は@<code>{git branch}コマンドを使います。ブランチ間の移動は@<code>{git checkout}または@<code>{git switch}コマンドを使います。
@@ -135,20 +145,20 @@ TODO: ブランチはコミットへの参照の図を入れる
 $ git branch # ブランチを確認
 * main
 
-$ git branch practice1 # practice1ブランチを作成
+$ git branch practice # practiceブランチを作成
 
-$ git branch # practice1ブランチが作成されたことを確認
+$ git branch # practiceブランチが作成されたことを確認
 * main
-  practice1
+  practice
 
-$ git checkout practice1 # practice1ブランチに移動
+$ git checkout practice # practiceブランチに移動
 
 $ git branch
   main
-* practice1
+* practice
 //}
 
-@<code>{*}のマークが移動したことから、practice1ブランチに移動できたことが分かります。
+@<code>{*}のマークが移動したことから、practiceブランチに移動できたことが分かります。
 
 次に、適当にファイルを変更してコミットしてみます。
 
@@ -160,10 +170,14 @@ $ git commit -m 'test.txtにHelloを追加'
 
 コミットグラフを確認してみます。
 
-TODO: 図を入れる
+//image[commit-graph-branch][Git Graph]{
+//}
 
-新たにコミットが作成され、practice1ブランチが移動しました。以前いたmainブランチの位置は変わっていません。
-このように、あるブランチでコミットすると、そのブランチが新規コミット（= 次のコミット）を指し示すように移動します。
+新たにコミットが作成され、practicブランチが移動しました。以前いたmainブランチの位置は変わっていません。
+このように、新たにコミットを作成すると、現在のブランチが新規コミット（= 次のコミット）を指し示すように移動します。
+
+//image[branch-moving][ブランチは新規コミットを指し示すように移動する]{
+//}
 
 === 練習問題2-2
 
@@ -180,47 +194,54 @@ TODO: 図を入れる
 //image[practice-2-2][Git Graph]{
 //}
 
+解答: @<hd>{練習問題の解答}
+
 == マージと2種類のマージ
 
 あるブランチで作成したコミットを別のブランチに取り込むときは、@<code>{git merge}コマンドを使います。
 
 gitのマージには、早送りマージ（Fast-forward merge）と早送りでないマージ（Non Fast-forward merge）の2種類あります。
 
-早送りマージは、マージ元のブランチがマージ先のブランチへと移動するマージです。
-マージ先ブランチの親コミットをたどってマージ元ブランチへとたどり着けるときに行えます。
-gitは早送りマージが可能なときは早送りマージを行います。
+早送りマージは、マージ元のブランチが取り込むブランチへと移動するマージです。
+マージ元のブランチが、取り込むブランチの祖先のコミットであるときに行われます。
+マージ元のブランチ（過去）が、取り込むブランチ（未来）に移動するため、早送りマージといいます。
 
-TODO: 図を入れる
+//image[fast-forward-merge][早送りマージ]{
+//}
 
-早送りでないマージでは、新しくコミットが作成されて2つのブランチが合流します。
+早送りでないマージでは、マージするブランチの変更が取り込まれた新しいコミットが作成されます。
 新しく作成されるコミットのことをマージコミットといいます。
+
+//image[non-fast-forward-merge][早送りでないマージ]{
+//}
 
 == マージをやってみる
 
 @<code>{git merge}で1つのブランチを指定すると、そのブランチと現在のブランチがマージされます。
 
-mainブランチに戻ってから、practice1ブランチをマージしてみましょう。
+mainブランチに戻ってから、practiceブランチをマージしてみましょう。
 
 //cmd{
 $ git checkout main
-$ git merge practice1
-Updating 21180e3..09471f0
+$ git merge practice
+Updating e5291b6..8807efc
 Fast-forward
  test.txt | 1 +
  1 file changed, 1 insertion(+)
 //}
 
 Fast-forwardと書かれていることから、早送りマージが行われたことが分かります。
-コミットグラフを確認すると、practice1ブランチがmainブランチの位置に移動しています。
+コミットグラフを確認すると、mainブランチがpracticeブランチの位置に移動しています。
 
-TODO: 図を入れる
+//image[merge-practice-into-main][practiceブランチをmainブランチに早送りマージ]{
+//}
 
 次は早送りでないマージをしてみましょう。
 @<code>{--no-ff}オプションをつけることで、早送りマージが可能なときも早送りでないマージを強制できます。
 
 //cmd{
 $ git checkout -b practice2
-$ echo 'Hello2' > test.txt
+$ echo 'Hello2' >> test.txt
 $ git add . && git commit -m 'test.txtにHello2を追加'
 $ git checkout main
 $ git merge --no-ff practice2
@@ -229,10 +250,12 @@ Merge made by the 'recursive' strategy.
  1 file changed, 1 insertion(+)
 //}
 
-TODO: 図を入れる
-
 mergeコマンドを実行するとエディタが開くため、保存して終了しましょう。
-コミットグラフを確認すると、マージコミットが作成されてブランチが合流したことが分かります。
+コミットグラフを確認すると、マージコミットが作成されたことが分かります。
+また、test.txtを確認すると、マージしたpractice2ブランチでの変更が取り込まれています。
+
+//image[merge-practice2-into-main][practice2ブランチをmainブランチに早送りでないマージ]{
+//}
 
 === 練習問題2-3
 
@@ -250,6 +273,8 @@ mergeコマンドを実行するとエディタが開くため、保存して終
 //image[practice-2-3][Git Graph]{
 //}
 
+解答: @<hd>{練習問題の解答}
+
 == リベース
 
 TODO:
@@ -265,6 +290,8 @@ $ touch test2.txt
 $ git add .
 $ git commit -m 'add test2.txt'
 //}
+
+問題に戻る: @<hd>{手を動かして実践}
 
 === 練習問題2-2の解答
 
@@ -289,6 +316,8 @@ $ git commit --allow-empty -m 'commit4'
 //}
 
 これでコミットグラフは完成です。
+
+問題に戻る: @<hd>{コミットとブランチ}
 
 //cmd{
 $ git log --graph --oneline --all
@@ -329,3 +358,5 @@ $ git log --graph --oneline
 $ git checkout -b practice2
 $ git commit --allow-empty -m 'commit4'
 //}
+
+問題に戻る: @<hd>{マージをやってみる}
