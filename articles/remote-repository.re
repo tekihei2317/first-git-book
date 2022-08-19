@@ -14,7 +14,7 @@ GitHubアカウントを作成していない場合は、GitHubのホームペ�
 SSH鍵を登録してください@<fn>{register-ssh-key-to-github}。
 
 //footnote[github][@<href>{https://github.com}]
-//footnote[register-ssh-key-to-github][こちらの記事が参考になると思います。@<href>{https://qiita.com/shizuma/items/2b2f873a0034839e47ce}]
+//footnote[register-ssh-key-to-github][こちらの記事を参照してください。@<href>{https://qiita.com/shizuma/items/2b2f873a0034839e47ce}]
 
 GitHubにログインしたら、左上の+アイコンのNew Repositoryをクリックします。
 
@@ -22,7 +22,7 @@ GitHubにログインしたら、左上の+アイコンのNew Repositoryをク�
 //}
 
 Repository nameに「git-practice」と入力し、ページ下部のCreate repositoryボタンをクリックします。
-リポジトリを作成すると、以下のようなページが表示されます。
+リポジトリを作成すると、以下のように空のリポジトリページが表示されます。
 
 //image[empty-remote-repository][空のリモートリポジトリ]{
 //}
@@ -31,7 +31,7 @@ Repository nameに「git-practice」と入力し、ページ下部のCreate repo
 
 それでは、ローカルリポジトリの内容をリモートリポジトリにアップロードしてみましょう。
 
-新しくローカルリポジトリを作成して、適当にコミットします。
+新しくローカルリポジトリを作成して、コミットを作成します。
 
 //cmd{
 $ mkdir git-practice && cd git-practice
@@ -56,7 +56,7 @@ pushの第一引数にはリポジトリ、第二引数にはブランチを指�
 $ git push origin main # リモートリポジトリoriginにmainブランチをアップロードする
 //}
 
-pushが完了すると、GitHubのリポジトリのページにアップロードしたファイルが表示されます。
+プッシュが完了すると、GitHubのリポジトリのページにアップロードしたファイルが表示されます。
 
 //image[after-push][プッシュ後のGitHubのリポジトリページ]{
 //}
@@ -66,27 +66,28 @@ pushが完了すると、GitHubのリポジトリのページにアップロー�
 複数人で開発すると、リモートリポジトリとローカルリポジトリの内容に差が生まれます。
 その場合、リモートの内容をダウンロードしてローカルに反映する必要があります。
 
-この状態を再現するために、別のローカルリポジトリでコミットを作成してpushします。
+この状態を再現するために、別のローカルリポジトリでコミットを作成してプッシュします。
 
 まずは別のローカルリポジトリを作成します。
 すでにリモートリポジトリが存在するため、
-@<code>{git clone}コマンドでリモートリポジトリをコピーしてローカルリポジトリを作成します。
-@<code>{git clone}コマンドで指定するURLは、GitHubのリポジトリページのCodeボタンをクリックすると見れます。
+@<code>{git clone}コマンドでリモートリポジトリをコピーして作成します。
+@<code>{git clone}コマンドで指定するURLは、GitHubのリポジトリページのCodeボタンをクリックすると確認できます。
 
 //cmd{
 $ cd ../
 $ git clone git@github.com:<ユーザー名>/git-practice.git git-practice2 # git-practice2/にコピー
 //}
 
-VSCodeのワークスペースの機能を使うと、複数のディレクトリを同時に開くことができます。
+次に、VSCodeのワークスペースに2つ目のローカルリポジトリのディレクトリを追加します。
 
 //cmd{
 $ code -a git-practice2
 //}
 
-もう一方のリポジトリでコミットを作成してpushします。
+もう一方のリポジトリでコミットを作成してプッシュします。
 
 //cmd{
+$ cd git-practice2
 $ echo '\n- apple' >> README.md
 $ git add . && git commit -m 'appleを追加'
 $ git push origin main
@@ -94,7 +95,8 @@ $ git push origin main
 
 現在は以下のような状態になっています。
 
-TODO: 図を入れる
+//image[after-push-in-another-repository][ローカルとリモートのリポジトリの状態]{
+//}
 
 それではリモートリポジトリの状態を、1つ目のローカルリポジトリにダウンロードしてみます。
 ダウンロードするためには、@<code>{git fetch}コマンドを使います。
@@ -116,11 +118,10 @@ $ git fetch origin main
 
 == リモート追跡ブランチ
 
-fetchを実行すると、origin/mainというブランチが表れました。
+fetchを実行すると、origin/mainというブランチが現れました。
 このような、<リモートリポジトリ名>/<ブランチ名>というブランチのことをリモート追跡ブランチといいます。
-リモート追跡ブランチは、リモートリポジトリのブランチの位置を表す、ローカルリポジトリにあるブランチです。
-
-TODO: 図を入れる
+リモート追跡ブランチは、リモートリポジトリのブランチの位置を表すローカルリポジトリにあるブランチです。
+origin/mainは、リモートリポジトリoriginのmainブランチの位置を表します。
 
 fetchを実行しただけでは、取得したコミットはまだローカルのmainブランチには反映されていません。
 ローカルに反映するためには、リモート追跡ブランチをローカルブランチにマージします。
@@ -128,9 +129,18 @@ fetchを実行しただけでは、取得したコミットはまだローカル
 //cmd{
 $ git checkout main
 $ git merge origin/main
+Updating a3f8c65..c14e53a
+Fast-forward
+ README.md | 2 ++
+ 1 file changed, 2 insertions(+)
 //}
 
-早送りマージが行われ、ブランチを最新の状態にできました。
+早送りマージが行われ、ブランチを最新の状態にできました。@<fn>{git-graph-remote-tracking-branch}
+
+//image[merge-remote-tracking-branch][リモート追跡ブランチのマージ後]{
+//}
+
+//footnote[git-graph-remote-tracking-branch][Git Graphでは、ブランチとリモート追跡ブランチが同じ位置にある場合、ブランチの後ろにoriginと表示されます。]
 
 == pull
 
