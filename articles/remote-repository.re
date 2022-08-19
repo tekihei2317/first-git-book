@@ -160,4 +160,38 @@ pullは2つのコマンドの処理が同時に行われるため、挙動がや
 
 == 上流ブランチ
 
-TODO:
+=== 上流ブランチとは
+
+上流ブランチとは、ローカルブランチに対応するリモートブランチのことです。
+具体的には、gitの設定の@<code>{branch.<name>.remote}と@<code>{branch.<name>.merge}のペアのことです。
+
+上流ブランチの設定は@<code>{.git/config}ファイルで確認できます。
+
+//list[git-upstream-branch][.git/configの上流ブランチの設定]{
+# mainブランチの上流ブランチは、リモートリポジトリoriginのmainブランチ
+[branch "main"]
+	remote = origin
+	merge = refs/heads/main
+//}
+
+上流ブランチを設定することで、@<code>{git pull}と@<code>{git push}@<fn>{when-can-push-params-omitted}を引数なしで実行できます。
+引数なしで実行した場合、@<code>{git pull}は上流ブランチをフェッチしてカレントブランチにマージし、
+@<code>{git push}はカレントブランチを上流ブランチにプッシュします。
+
+//list[git-push-pull-without-params][引数なしでのpullとpushの実行]{
+git pull = git pull [branch.<current>.remote] [branch.<current>.merge]
+git push = git push [branch.<current>.remote] <current>
+//}
+
+//footnote[when-can-push-params-omitted][pushの引数が省略できるのは、@<code>{push.default}がupstreamまたはsimpleのときです。未設定の場合は暗黙的にsimpleが使用されるため、省略可能です。]
+
+=== 上流ブランチの設定方法
+
+設定方法はいくつかありますが、主に使用するのは以下の2つです。
+
+ * ローカルブランチがある場合 → @<code>{git push}に@<code>{-u}（@<code>{--set-upstream}）オプションをつける
+ * ローカルブランチがない場合 → リモート追跡ブランチがある状態で、ローカルブランチをチェックアウトする
+
+ローカルブランチがある場合は、プッシュに@<code>{-u}オプションをつけることで上流ブランチを設定できます。
+ローカルブランチがない場合は、リモート追跡ブランチ（例えばorigin/feature）がある状態でローカルブランチ（feature）にチェックアウトすることで、
+ブランチの作成と上流ブランチの設定を同時に行えます。
