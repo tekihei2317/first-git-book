@@ -142,20 +142,21 @@ Fast-forward
 
 //footnote[git-graph-remote-tracking-branch][Git Graphでは、ブランチとリモート追跡ブランチが同じ位置にある場合、ブランチの後ろにoriginと表示されます。]
 
-== pull
+== プル
 
-@<code>{git pull}コマンドは、fetchとmergeを同時に行います。
+@<code>{git pull}は、リモートリポジトリの変更を現在のリポジトリに取り込むコマンドです。
+@<code>{git pull}は、指定したパラメータで@<code>{git fetch}を実行したあと、@<code>{git merge FETCH_HEAD}を実行します。
 
-//cmd{
-$ git pull origin main # コマンド合ってる?
-# 以下のコマンドの略(TODO: 調べて検証する)
-$ git fetch origin main
-$ git merge origin/main
+//list[git-merge][プルはフェッチとマージを順番に行うコマンド]{
+git pull [<repository> [<branch>]]
+= git fetch [<repository> [<branch>]] && git merge FETCH_HEAD
 //}
 
-pullは指定したブランチを最新の状態にするコマンドです。
+@<code>{FETCH_HEAD}は、最後にフェッチしたリモート追跡ブランチの位置を表すポインタです。
+つまり@<code>{git pull origin main}は、@<code>{git fetch origin main && git merge origin/main}と同じです。
+
 pullは2つのコマンドの処理が同時に行われるため、挙動がやや複雑なコマンドです。
-そのため、はじめはpullを使わずfetchとmergeを使ってみるのがオススメです。
+そのため、はじめはfetchとmergeを使ってリモートリポジトリに関する操作に慣れることをおすすめします。
 
 == 上流ブランチ
 
