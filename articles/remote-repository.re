@@ -123,6 +123,9 @@ fetchを実行すると、origin/mainというブランチが現れました。
 リモート追跡ブランチは、リモートリポジトリのブランチの位置を表すローカルリポジトリにあるブランチです。
 origin/mainは、リモートリポジトリoriginのmainブランチの位置を表します。
 
+//image[remote-tracking-branch][リモート追跡ブランチとは]{
+//}
+
 fetchを実行しただけでは、取得したコミットはまだローカルのmainブランチには反映されていません。
 ローカルに反映するためには、リモート追跡ブランチをローカルブランチにマージします。
 
@@ -140,11 +143,11 @@ Fast-forward
 //image[merge-remote-tracking-branch][リモート追跡ブランチのマージ後]{
 //}
 
-//footnote[git-graph-remote-tracking-branch][Git Graphでは、ブランチとリモート追跡ブランチが同じ位置にある場合、ブランチの後ろにoriginと表示されます。]
+//footnote[git-graph-remote-tracking-branch][Git Graphでは、ローカルブランチとリモート追跡ブランチが同じ位置にある場合、ブランチの後ろにoriginと表示されます。]
 
 == プル
 
-@<code>{git pull}は、リモートリポジトリの変更を現在のリポジトリに取り込むコマンドです。
+@<code>{git pull}は、リモートリポジトリの変更を現在のブランチに取り込むコマンドです。
 @<code>{git pull}は、指定したパラメータで@<code>{git fetch}を実行したあと、@<code>{git merge FETCH_HEAD}を実行します。
 
 //list[git-merge][プルはフェッチとマージを順番に行うコマンド]{
@@ -163,9 +166,13 @@ pullは2つのコマンドの処理が同時に行われるため、挙動がや
 === 上流ブランチとは
 
 上流ブランチとは、ローカルブランチに対応するリモートブランチのことです。
-具体的には、gitの設定の@<code>{branch.<name>.remote}と@<code>{branch.<name>.merge}のペアのことです。
+上流ブランチを設定することで、@<code>{git pull}と@<code>{git push}を引数なしで実行できます。
 
-上流ブランチの設定は@<code>{.git/config}ファイルで確認できます。
+//image[upstream-branch][上流ブランチの設定]{
+//}
+
+上流ブランチとは具体的には、gitの設定の@<code>{branch.<name>.remote}と@<code>{branch.<name>.merge}のペアのことです。
+この設定は@<code>{.git/config}ファイルで確認できます。
 
 //list[git-upstream-branch][.git/configの上流ブランチの設定]{
 # mainブランチの上流ブランチは、リモートリポジトリoriginのmainブランチ
@@ -174,9 +181,8 @@ pullは2つのコマンドの処理が同時に行われるため、挙動がや
 	merge = refs/heads/main
 //}
 
-上流ブランチを設定することで、@<code>{git pull}と@<code>{git push}@<fn>{when-can-push-params-omitted}を引数なしで実行できます。
-引数なしで実行した場合、@<code>{git pull}は上流ブランチをフェッチしてカレントブランチにマージし、
-@<code>{git push}はカレントブランチを上流ブランチにプッシュします。
+上流ブランチを設定して引数なしで実行すると、@<code>{git pull}は上流ブランチをフェッチしてカレントブランチにマージします。
+また、@<code>{git push}はカレントブランチを上流ブランチにプッシュします@<fn>{when-can-push-params-omitted}。
 
 //list[git-push-pull-without-params][引数なしでのpullとpushの実行]{
 git pull = git pull [branch.<current>.remote] [branch.<current>.merge]
