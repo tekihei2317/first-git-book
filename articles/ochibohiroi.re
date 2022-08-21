@@ -2,6 +2,117 @@
 
 == ghqとpecoを使ったリポジトリの管理
 
+複数のリポジトリを使用すると、リポジトリをクローンする場所に迷ったり、リポジトリを開くのが手間になったりします。
+ここではghqとpecoを使った解決策を説明します。
+
+=== ghqとは
+
+ghq@<fn>{ghq}は、ローカルにクローンしたリポジトリをシンプルに管理するためのツールです。
+@<code>{ghq get <リポジトリURL>}でリモートリポジトリをクローンしたり、@<code>{ghq get list}でクローンしたリポジトリの一覧を確認できます。
+
+//cmd{
+$ ghq list
+github.com/isomorphic-git/isomorphic-git
+github.com/stoplightio/sample-specs
+github.com/tekihei2317/dotfiles
+github.com/tekihei2317/git-problems
+github.com/tekihei2317/git-problems_branching
+github.com/tekihei2317/git-problems_commit
+github.com/tekihei2317/git-problems_ff-merge
+//}
+
+//footnote[ghq][@<href>{https://github.com/x-motemen/ghq}]
+
+=== pecoとは
+
+peco@<fn>{peco}は、コマンドの出力をインタラクティブに絞り込むためのツールです。
+標準出力の内容をpecoコマンドに渡すと、検索画面が起動します。
+検索画面で文字を入力すると行が絞り込まれ、選択した行がpecoコマンドの標準出力になります。
+
+//footnote[peco][@<href>{https://github.com/peco/peco}]
+
+=== ghqとpecoを実際に使ってみる
+
+それでは実際に使ってみます。Mac + zshを前提に書いているので、異なる環境の場合は適宜読み替えてください。
+
+まず、ghqとpecoをHomebrewでインストールします。
+
+//cmd{
+brew install ghq
+brew install peco
+//}
+
+次に、ghqでリポジトリをクローンします。tekihei2317/git-problemsをクローンしてみます。
+
+//cmd{
+$ ghq get https://github.com/tekihei2317/git-problems
+//}
+
+GitHubのリポジトリは@<code>{<ghqのルートディレクトリ>/github.com/<user>/<repository>}にクローンされます。
+ghqのルートディレクトリは、デフォルトでは@<code>{~/ghq}です。@<code>{ghq root}で確認できます。
+
+@<code>{ghq list}でリポジトリ一覧を表示し、pecoに渡します。
+
+//cmd{
+$ ghq list | peco
+//}
+
+まだ1行しかないので分かりにくいですが、文字を入力すると絞り込まれます。
+Enterを押すと、選択した行が標準出力に表示されます。
+
+//cmd{
+$ ghq list | peco
+github.com/tekihei2317/git-problems
+//}
+
+=== シェル関数を作成する
+
+ghqとpecoを使用して、以下の2つの便利関数を作ってみます。
+
+ * 選択したリポジトリのディレクトリに移動する
+ * 選択したリポジトリをVSCodeで開く
+
+まずは1つ目の関数です。名前はpeco + cd = pcdにしました。
+
+//list[ghq-peco-pcd][選択したリポジトリに移動するコマンド]{
+function pcd() {
+  local repository=$(ghq list | peco)
+  local directory="$(ghq root)/$repository"
+  print -z "cd $directory"
+}
+//}
+
+@<code>{print}はzshの組み込み関数で、-zオプションをつけると、渡した文字列を編集バッファ@<fn>{editing-buffer}に入れてくれます。
+関数を~/.zshrcに記入したあと、source ~/.zshrcで再読み込みしてください。
+
+//footnote[editing-buffer][ターミナルでコマンドを入力する場所のことです。]
+
+@<code>{pcd}と入力すると、pecoが起動します。
+Enterを一度押すとcdコマンドが編集バッファに入り、もう一度Enterを押すと目的のディレクトリに移動できます。
+
+//cmd{
+$ pcd
+$ cd /Users/{user}/ghq/github.com/tekihei2317/git-problems
+$ pwd
+/Users/{user}/ghq/github.com/tekihei2317/git-problems
+//}
+
+次はリポジトリをVSCodeで開く関数です。名前はpeco + code = pcodeにしました。実装はpcdコマンドとほとんど同じです。
+
+//list[ghq-peco-pcode][選択したリポジトリをVSCodeで開くコマンド]{
+function pcode() {
+  local repository=$(ghq list | peco)
+  local directory="$(ghq root)/$repository"
+  print -z "code $directory -r"
+}
+//}
+
+codeコマンドに-rオプションをつけて、現在のウィンドウでリポジトリを開くようにしています。
+別のウィンドウで開くのが好みの場合は、-rオプションを削除してください。
+
+pcodeコマンドを実行してリポジトリをEnterで選択し、再度Enterをクリックすると、目的のリポジトリを
+VSCodeで開けます。
+
 == checkoutコマンドの3つの使い方
 
 ブランチの切り替えに使ってきた@<code>{git checkout}コマンドですが、実は3つの使い方があります。
