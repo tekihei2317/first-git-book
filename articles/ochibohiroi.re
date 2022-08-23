@@ -2,7 +2,7 @@
 
 == ghqとpecoを使ったリポジトリの管理
 
-複数のリポジトリをクローンすると、リポジトリをクローンする場所に迷ったり、リポジトリを探すのが手間になったりします。
+複数のリポジトリを扱っていると、リポジトリをクローンする場所に迷ったり、リポジトリを探すのが手間になったりします。
 ここではghqとpecoを使った解決策を説明します。
 
 === ghqとは
@@ -120,7 +120,7 @@ VSCodeで開けます。
 === HEADを移動する
 
 HEADとは、現在の作業位置を表すポインタ（参照）です。HEADはブランチまたはコミットを指します。
-HEADの実体は@<code>{.git/HEAD}です。gitは、HEADの内容から現在のブランチを判定します。
+HEADがブランチを指しているときは、それが現在のブランチです。HEADの実体は@<code>{.git/HEAD}です。
 
 //cmd{
 $ cat .git/HEAD
@@ -134,8 +134,11 @@ git checkout <branch>
 git checkout <commit>
 //}
 
-checkoutコマンドでコミットを指定すると、detached HEAD状態になります。
-detached HEADとは、HEADがブランチではなくコミットを指している状態のことです。
+1つ目は、これまでも使ってきたブランチを切り替えるコマンドです。
+内部的には、HEADが指定したブランチに書き換えられます。
+
+2つ目のように、checkoutにコミットIDを直接指定すると、HEADが指定したコミットIDで書き換わります。
+このように、HEADがブランチではなくコミットを指している状態をdetached HEADといいます。
 
 === ステージしていない変更を削除する
 
@@ -147,6 +150,9 @@ git checkout <pathspec>
 
 上記のコマンドを実行すると、インデックスの内容でワーキングツリーが上書きされます。
 つまり、ワーキングツリーのステージしていない変更が削除されます。
+
+//image[checkout-file][ファイルを指定してチェックアウト]{
+//}
 
 === 過去のファイルの状態を取り出す
 
@@ -178,6 +184,9 @@ git reset [<commit>] [--] <pathspec>
 HEADでインデックスを更新するというのは、addを取り消すという意味になります。
 つまり@<code>{git reset <pathspec>}は、@<code>{git add <pathspec>}と逆の操作をするコマンドです。
 
+//image[add-and-reset][addとresetは逆の操作]{
+//}
+
 //footnote[update-index-with-previous-commit][コミットを指定してもワーキングツリーが更新されないため、代わりにgit checkout <commit> <pathspec>を使ったほうがよいでしょう。]
 
 === HEADとブランチを移動する
@@ -194,14 +203,17 @@ git reset [--soft | --mixed | --hard ] [<commit>]
 --hardはインデックスとワーキングツリーを更新します。--mixedはインデックスを更新します。--softはどちらも更新しません。
 オプションを指定しなかった場合は--mixedが使われます。
 
+//image[reset-with-commit][コミットを指定してreset]{
+//}
+
 === 主な使い方
 
-筆者は、以下の2つのコマンドをしばしば使います。
+以下の2つのコマンドをしばしば使います。
 
  * @<code>{git reset .}
  * @<code>{git reset --hard HEAD}
 
-@<code>{git reset .}は、@<code>{git add .}と逆の意味のコマンドです。ステージした変更を取り消します。
+@<code>{git reset .}は、@<code>{git add .}と逆の操作で、ステージした変更を取り消します。
 @<code>{git reset --hard HEAD}@<fn>{reset-working-tree-using-checkout}はHEAD（最後のコミット）でインデックスとワーキングツリーを更新します。
 最後のコミット以降に変更した内容を取り消したいときに使います。
 
