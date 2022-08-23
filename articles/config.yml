@@ -22,7 +22,7 @@ bookname: first-git-book
 language: ja
 
 # 書名
-booktitle: {name: "手を動かして学ぶgit入門", file-as: "reviewテンプレート"}
+booktitle: {name: "ゼロからわかるgit入門", file-as: "reviewテンプレート"}
 
 # 著者名。「, 」で区切って複数指定できる
 aut: [{name: "佐藤鉄馬", file-as: "サトウテツマ"}]

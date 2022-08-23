@@ -97,7 +97,8 @@ $ git merge origin/main
 
 早送りマージが行われ、mainブランチがリモートリポジトリのmainブランチと同じ状態になりました。
 
-TODO: git graphの画像を入れる
+//image[git-graph-after-pr-merged][ローカルリポジトリへの反映が完了]{
+//}
 
 == 3方向マージとコンフリクト
 
