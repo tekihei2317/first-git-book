@@ -110,10 +110,13 @@ TODO: git graphの画像を入れる
 
 === gitのマージの仕組み
 
-gitのマージは、取り込まれるコミット・取り込むコミット・それらの共通祖先の3つコミットを比較して行われます。
+gitのマージは、取り込まれるコミット・取り込むコミット・それらの共通祖先@<fn>{merge-base}の3つコミットを比較して行われます。
 このように、3つの状態を比較してマージすることを3方向マージといいます。
 
-TODO: 図を入れる
+//image[three-way-merge][3方向マージ]{
+//}
+
+//footnote[merge-base][この共通祖先のことをマージベースといいます。コミットAとBのマージベースは、@<code>{git merge-base A B}で分かります。]
 
 3方向マージの実装について考えてみましょう。あるファイルについて、片方のコミットでのみ追加・編集・削除が行われていた場合は、その変更を採用すればよいです。
 問題は、両方のコミットが同じファイルを変更している場合です。これは、以下の4つに場合分けできます@<fn>{why-add-edit-case-does-not-exist}。
@@ -168,7 +171,7 @@ function multiply(x, y) {
 }
 //}
 
-これらの3つのファイルをマージすると、以下のようになります。
+派生ファイル同士をマージすると、以下のようになります。
 
 //list[merged][マージしたファイル][javascript]{
 function minus(x, y) {
@@ -184,7 +187,7 @@ function multiply(x, y) {
 }
 //}
 
-2つの変更が、それぞれadd関数の上と下という「別の箇所」を変更したと判定されるため、
+2つのファイルが、それぞれadd関数の上と下という「別の箇所」を変更したと判定されるため、
 マージが成功します。
 
 === コンフリクトが起きる場合
@@ -215,25 +218,7 @@ function multiply(x, y) {
 }
 //}
 
-TODO: 実際にやった結果をペーストする
-
-//list[conflicted][コンフリクトしたファイル][javascript]{
-function add(x, y) {
-  return x + y;
-}
-
-<<<<<<< main
-function multiply(x, y) {
-  return x * y;
-}
-=======
-function minus(x, y) {
-  return x - y;
-}
->>>>>>> feature
-//}
-
-add関数の下という同じ「箇所」に、別の変更がされているためコンフリクトします。
+add関数の下という「同じ箇所」に、別の変更がされているためコンフリクトします。
 
 == コンフリクトの解消方法
 
@@ -242,47 +227,96 @@ add関数の下という同じ「箇所」に、別の変更がされている�
 featureブランチでminus関数を追加したものの、
 mainブランチにmultiply関数が追加されてコンフリクトしてしまったという想定です。
 
-まずは、以下のテンプレートリポジトリを使って、自分のアカウントにリポジトリを作成しましょう。
-リポジトリを作成したら、ローカルにクローンします。
+//image[git-graph-before-merge][コンフリクトしたときの状況]{
+//}
 
-TODO: テンプレートリポジトリの画像を入れる
+まずは、以下のリポジトリをフォークして、自分のアカウントにリポジトリを作成して下さい。
+フォークするには、リポジトリのページ上部のForkボタンをクリックします。
 
-GitHubのプルリクエストの画面から、プルリクエストを作成します。
-プルリクエストを作成すると、コンフリクトが発生してマージできないということが分かります。
+@<href>{https://github.com/tekihei2317/git-problems_resolve-conflict}
 
-TODO: 画像を入れる？
+フォークする際は、Copy the main branch onlyのチェックを外してすべてのブランチをコピーします。
+
+//image[uncheck-copy-the-main-branch-only][すべてのブランチをコピーする]{
+//}
+
+リポジトリが作成できたら、featureブランチからmainブランチへのプルリクエストを作成します。
+Pull Request→New Requestから作成します。
+base repository（プルリクエストの送り先）がデフォルトではフォーク元のリポジトリになっているため、フォークしたリポジトリに切り替えます。
+
+//image[change-base-repository][ベースリポジトリを変更する]{
+//}
+
+プルリクエストを作成すると、コンフリクトが発生してプルリクエストがマージできないことが分かります。
+
+//image[conflict-occur][コンフリクトが発生]{
+//}
 
 それではコンフリクトを解消してみましょう。
 GitHub上でもコンフリクトを解消できますが、練習のためにローカルのエディタで解消します。
 
-ローカルでのコンフリクトの解消は、以下のように行います。
+ローカルでのコンフリクトの解消は、以下の手順で行います。
 
  * マージするブランチに、マージ先のブランチをマージする
  * コンフリクトを解消する
 
-まず、マージしたいブランチに移動し、マージ先のブランチをマージします。
+まず、プルリクエストでマージしたいブランチ（feature）に移動し、マージ先のブランチ（merge）をマージします。
 こうすることで、コンフリクトが発生した箇所がファイルにマークされます。
 
-TODO: コンフリクトの内容を書く
+//cmd{
+$ git checkout feature
+$ git merge main
+Auto-merging index.js
+CONFLICT (content): Merge conflict in index.js
+Automatic merge failed; fix conflicts and then commit the result.
+//}
 
-次に、コンフリクトを解消します。
+//list[conflicted-file][コンフリクトしたファイル]{
+function add(x, y) {
+  return x + y;
+}
+
+<<<<<<< HEAD
+function minus(x, y) {
+  return x - y;
+=======
+function multiply(x, y) {
+  return x * y;
+>>>>>>> main
+}
+//}
+
 イコールで区切られた上の部分が現在のブランチの内容で、下の部分がマージしたブランチの内容です。
 
-両方の関数を追加したいので、両方の変更を残します。@<fn>{vscode-merge-editor}
+次に、コンフリクトを解消します。両方の関数を追加したいので、ファイルを編集して両方の変更を残します。
 
-//footnote[vscode-merge-editor][VSCode1.69(2022年6月版)からマージエディタが追加されたため、それを使用してもよいかもしれません。]
+//list[fix-conflicted-file][コンフリクトを修正したファイル]{
+function add(x, y) {
+  return x + y;
+}
+
+function minus(x, y) {
+  return x - y;
+}
+
+function multiply(x, y) {
+  return x * y;
+}
+//}
 
 コンフリクトを解消したらコミットします。
 コミットメッセージは自動で入力されるため、それを使用することにします。
 
 //cmd{
 $ git add . && git commit
+$ git push
 //}
 
 コミットしたらプッシュして、プルリクエストを確認します。
 マージできるようになっているので、マージすれば完了です。
 
-TODO: マージできるようになった画像を入れる？
+//image[github-merge-conflict-resolved][コンフリクトを解消するとマージできる]{
+//}
 
 == ブランチ戦略
 
@@ -301,8 +335,6 @@ TODO: マージできるようになった画像を入れる？
 
 GitHub Flowは、初期のGitHubで開発で使われていたシンプルなブランチ戦略です。
 mainブランチから作業内容を表す名前のブランチを作成し、そのブランチをプルリクエストを使ってmainブランチにマージします。
-
-TODO: 図を入れる
 
 より詳細には、以下のようなルールがあります。
 
