@@ -206,18 +206,20 @@ git reset [--soft | --mixed | --hard ] [<commit>]
 //image[reset-with-commit][コミットを指定してreset]{
 //}
 
-=== 主な使い方
+== checkoutコマンドとresetコマンドの主な使い方
 
-以下の2つのコマンドをしばしば使います。
+checkoutコマンドとresetコマンドの主な使い方を、以下にまとめました。
 
- * @<code>{git reset .}
- * @<code>{git reset --hard HEAD}
-
-@<code>{git reset .}は、@<code>{git add .}と逆の操作で、ステージした変更を取り消します。
-@<code>{git reset --hard HEAD}@<fn>{reset-working-tree-using-checkout}はHEAD（最後のコミット）でインデックスとワーキングツリーを更新します。
-最後のコミット以降に変更した内容を取り消したいときに使います。
-
-//footnote[reset-working-tree-using-checkout][ステージする前に取り消すほうが多いため、たいていは@<code>{git checkout .}で間に合います。]
+//table[git-checkout-and-reset][checkoutとresetの主な使い方]{
+やりたいこと	コマンド
+------------
+特定のファイルのステージを取り消したい	git reset <pathspec>
+最後のコミット以降の変更をすべて取り消したい	git reset —hard HEAD
+ブランチを、指定したコミットに移動させたい	git reset --hard <commit>
+特定のファイルの昔の状態を復元したい	git checkout <commit> [—] <pathspec>
+昔の状態を確認したい	git checkout <commit>
+作業ツリーの内容を取り消したい	git checkout <pathspec>
+//}
 
 == これまでのまとめ
 
@@ -226,9 +228,9 @@ git reset [--soft | --mixed | --hard ] [<commit>]
 === ローカルリポジトリの操作（2章）
 
 gitにはワーキングツリー、インデックス、コミットの3つの状態があります。
-3つとも、管理しているファイルのすべての状態をもったスナップショットです。
+インデックスとコミットのどちらとも、ある時点でのすべてのファイルの状態を表すスナップショットです。
 
-addコマンドでインデックスにステージしてから、commitコマンドでコミットを作成します。
+addコマンドでインデックスにファイルを登録してから、commitコマンドでコミットを作成します。
 作成したコミットは、直前に作成したコミット（親コミット）への参照を持ちます。
 
 //image[manage-local-repository][ローカルリポジトリの操作]{
