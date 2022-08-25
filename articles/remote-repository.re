@@ -14,7 +14,7 @@ GitHubアカウントを作成していない場合は、GitHubのホームペ�
 SSH鍵を登録してください@<fn>{register-ssh-key-to-github}。
 
 //footnote[github][@<href>{https://github.com}]
-//footnote[register-ssh-key-to-github][こちらの記事を参照してください。@<href>{https://qiita.com/shizuma/items/2b2f873a0034839e47ce}]
+//footnote[register-ssh-key-to-github][SSH鍵の登録方法はこちらの記事を参照してください。@<href>{https://qiita.com/shizuma/items/2b2f873a0034839e47ce}]
 
 GitHubにログインしたら、左上の+アイコンのNew Repositoryをクリックします。
 
@@ -40,10 +40,11 @@ $ echo '# git-practice' > README.md
 $ git add . && git commit -m 'first commit'
 //}
 
-アップロードする前に、リモートリポジトリを登録する必要があります。
+アップロードする前に、リモートリポジトリをローカルリポジトリに登録する必要があります。
 リモートリポジトリを登録するには、@<code>{git remote add}コマンドを使用します。
 
 以下のコマンドで、originという名前でリモートリポジトリを登録します。
+このコマンドは、空のリポジトリページの手順に書かれています。
 
 //cmd{
 $ git remote add origin git@github.com:<あなたのGitHubユーザー名>/git-practice.git
@@ -93,7 +94,8 @@ $ git add . && git commit -m 'appleを追加'
 $ git push origin main
 //}
 
-現在は以下のような状態になっています。
+現在は以下のように、2つ目のローカルリポジトリとリモートリポジトリが最新の状態で、
+1つ目のローカルリポジトリは1コミット遅れています。
 
 //image[after-push-in-another-repository][ローカルとリモートのリポジトリの状態]{
 //}
