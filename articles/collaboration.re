@@ -40,7 +40,7 @@ GitHubにアクセスし、ヘッダーの+ボタンからNew repositoryをク�
 
 //cmd{
 $ git clone git@github.com:<ユーザー名>/pull-request-practice.git
-$ cd pull-request-practice
+$ code pull-request-practice
 //}
 
 新たにブランチを作成し、READMEに変更を加えてコミットします。
