@@ -3,7 +3,7 @@
 == 基本的な用語の説明
 
 ファイルの履歴が記録される場所や、記録したもののことをリポジトリといいます。
-gitでは、履歴をリポジトリに登録する前に、ファイルを選択してインデックス@<fn>{git-index}に登録します。
+gitでは、履歴をリポジトリに登録する前に、ファイルを選択してインデックス@<fn>{git-index}というファイルの一覧に登録します。
 そして、インデックスをもとに履歴を作成します。作成した履歴のことをコミットといいます。
 
 ファイルをインデックスに登録することをステージするといいます。
@@ -43,7 +43,7 @@ No commits yet
 
 Untracked files:
   (use "git add <file>..." to include in what will be committed)
-        test.txtｊｋ
+        test.txt
 
 nothing added to commit but untracked files present (use "git add" to track)
 //}
@@ -118,7 +118,7 @@ addを実行すると、指定したパスにあるファイルが圧縮され�
 そして、圧縮されたファイルに対応するハッシュ値や、元のファイルのファイルパスがインデックスに記録されます。
 
 commitを実行すると、インデックスからコミットが作成され、リポジトリに保存されます。
-インデックスとコミットは、ファイルのもち方がフラットな配列か木構造かという違いがあります。
+インデックスとコミットは、ファイルのもち方が一次元の配列か木構造かという違いがあります。
 
 //image[index-and-commit][インデックスとコミット]{
 //}
@@ -154,8 +154,8 @@ Git Graphは、コマンドを実行した際にコミットグラフがリア�
 //}
 
 gitのブランチの実体は単なるファイルです。
-例えば、mainブランチをあらわすファイルは@<code>{.git/refs/heads/main}です。
-このファイルを確認すると、コミットをあらわすハッシュ値だけが書かれています。
+例えば、mainブランチを表すファイルは@<code>{.git/refs/heads/main}です。
+このファイルを確認すると、コミットを表すハッシュ値だけが書かれています。
 
 //cmd{
 $ cat .git/refs/heads/main
@@ -224,13 +224,13 @@ commitコマンドに@<code>{--allow-empty}オプションをつけると、変�
 
 == マージと2種類のマージ
 
-分岐した2つの履歴を合流させたいときは、@<code>{git merge}コマンドを使います。
+分岐した2つの履歴（ブランチ）を合流させたいときは、@<code>{git merge}コマンドを使います。
 
 gitのマージには、早送りマージ（Fast-forward merge）と早送りでないマージ（Non Fast-forward merge）の2種類あります。
 
-早送りマージは、取り込まれるブランチが取り込むブランチへと移動するマージです。
-取り込まれるブランチが、取り込むブランチの祖先のコミットであるときに行われます。
-取り込まれるブランチ（過去）が、取り込むブランチ（未来）に移動するため、早送りマージといいます。
+早送りマージは、現在のブランチが取り込むブランチへと移動するマージです。
+現在のブランチが、取り込むブランチの祖先のコミットであるときに行われます。
+現在のブランチ（過去）が、取り込むブランチ（未来）に移動するため、早送りマージといいます。
 
 //image[fast-forward-merge][早送りマージ]{
 //}
@@ -325,11 +325,12 @@ commit2でmainブランチとpracticeブランチが分岐しているため、
 mainブランチでcommit2まで作成してからpracticeブランチを作成します。
 
 //cmd{
+$ git commit --allow-empty -m 'first commit'
 $ git commit --allow-empty -m 'commit2'
 $ git checkout -b practice
 $ git log --graph --oneline
 * 2b12ccf (HEAD -> practice, main) commit2
-* f1dd836 (origin/main, origin/HEAD) first commit
+* f1dd836 first commit
 //}
 
 
@@ -351,7 +352,7 @@ $ git log --graph --oneline --all
 | * 8c115e9 (practice) commit3
 |/
 * 2b12ccf commit2
-* f1dd836 (origin/main, origin/HEAD) first commit
+* f1dd836 first commit
 //}
 
 === 練習問題2-3の解答
@@ -361,6 +362,7 @@ $ git log --graph --oneline --all
 まず、practice1ブランチを作成してコミットします。
 
 //cmd{
+$ git commit --allow-empty -m 'first commit'
 $ git checkout -b practice1
 $ git commit --allow-empty -m 'commit2'
 //}
@@ -375,7 +377,7 @@ $ git log --graph --oneline
 |\
 | * 86f624d (practice1) commit2
 |/
-* e8581d0 (origin/main, origin/HEAD) first commit
+* e8581d0 first commit
 //}
 
 最後にpractice2ブランチでコミットして完成です。
