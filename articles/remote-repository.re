@@ -5,7 +5,7 @@
 リモートリポジトリとは、ネットワークの先にあるリポジトリのことです。
 リモートリポジトリはコードの保管庫として使用します。
 複数人で開発する場合は、まず手元のPCで開発してローカルリポジトリにコミットします。
-その後、リモートリポジトリにアップロードしてコードを共有します。
+その後、ローカルリポジトリの内容をリモートリポジトリにアップロードして、ファイルを共有します。
 
 == リモートリポジトリを作成してみる
 
@@ -14,7 +14,7 @@ GitHubアカウントを作成していない場合は、GitHubのホームペ�
 SSH鍵を登録してください@<fn>{register-ssh-key-to-github}。
 
 //footnote[github][@<href>{https://github.com}]
-//footnote[register-ssh-key-to-github][こちらの記事を参照してください。@<href>{https://qiita.com/shizuma/items/2b2f873a0034839e47ce}]
+//footnote[register-ssh-key-to-github][SSH鍵の登録方法はこちらの記事を参照してください。@<href>{https://qiita.com/shizuma/items/2b2f873a0034839e47ce}]
 
 GitHubにログインしたら、左上の+アイコンのNew Repositoryをクリックします。
 
@@ -31,19 +31,21 @@ Repository nameに「git-practice」と入力し、ページ下部のCreate repo
 
 それでは、ローカルリポジトリの内容をリモートリポジトリにアップロードしてみましょう。
 
-新しくローカルリポジトリを作成して、コミットを作成します。
+新しくローカルリポジトリを作成して、コミットを作成します。2章で作成したリポジトリは削除しても問題ありません。
 
 //cmd{
-$ mkdir git-practice && cd git-practice
+$ mkdir git-practice
+$ cd git-practice
 $ git init
 $ echo '# git-practice' > README.md
 $ git add . && git commit -m 'first commit'
 //}
 
-アップロードする前に、リモートリポジトリを登録する必要があります。
+アップロードする前に、リモートリポジトリをローカルリポジトリに登録する必要があります。
 リモートリポジトリを登録するには、@<code>{git remote add}コマンドを使用します。
 
 以下のコマンドで、originという名前でリモートリポジトリを登録します。
+このコマンドは、空のリポジトリページの手順に書かれています。
 
 //cmd{
 $ git remote add origin git@github.com:<あなたのGitHubユーザー名>/git-practice.git
@@ -93,7 +95,8 @@ $ git add . && git commit -m 'appleを追加'
 $ git push origin main
 //}
 
-現在は以下のような状態になっています。
+現在は以下のように、2つ目のローカルリポジトリとリモートリポジトリが最新の状態で、
+1つ目のローカルリポジトリは1コミット遅れています。
 
 //image[after-push-in-another-repository][ローカルとリモートのリポジトリの状態]{
 //}
@@ -108,6 +111,7 @@ fetchコマンドは、pushコマンドと同様にリポジトリ名とブラ�
 //footnote[when-upstream-branch-is-set][現在のブランチに上流ブランチが設定されている場合は、そちらが使用されます。]
 
 //cmd{
+$ cd ../git-practice
 $ git fetch origin main
 //}
 
@@ -130,7 +134,6 @@ fetchを実行しただけでは、取得したコミットはまだローカル
 ローカルに反映するためには、リモート追跡ブランチをローカルブランチにマージします。
 
 //cmd{
-$ git checkout main
 $ git merge origin/main
 Updating a3f8c65..c14e53a
 Fast-forward
@@ -199,5 +202,5 @@ git push = git push [branch.<current>.remote] <current>
  * ローカルブランチがない場合 → リモート追跡ブランチがある状態で、ローカルブランチをチェックアウトする
 
 ローカルブランチがある場合は、プッシュに@<code>{-u}オプションをつけることで上流ブランチを設定できます。
-ローカルブランチがない場合は、リモート追跡ブランチ（例えばorigin/feature）がある状態でローカルブランチ（feature）にチェックアウトすることで、
+ローカルブランチがない場合は、リモート追跡ブランチ（例えばorigin/feature）がある状態でローカルブランチ（feature）をチェックアウトすることで、
 ブランチの作成と上流ブランチの設定を同時に行えます。
