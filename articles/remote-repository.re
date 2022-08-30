@@ -48,7 +48,7 @@ $ git add . && git commit -m 'first commit'
 このコマンドは、空のリポジトリページの手順に書かれています。
 
 //cmd{
-$ git remote add origin git@github.com:<あなたのGitHubユーザー名>/git-practice.git
+$ git remote add origin git@github.com:<ユーザー名>/git-practice.git
 //}
 
 リモートリポジトリにアップロードするには、@<code>{git push}コマンドを使用します。
@@ -77,7 +77,8 @@ $ git push origin main # リモートリポジトリoriginにmainブランチを
 
 //cmd{
 $ cd ../
-$ git clone git@github.com:<ユーザー名>/git-practice.git git-practice2 # git-practice2/にコピー
+# git-practice2ディレクトリにコピー
+$ git clone git@github.com:<ユーザー名>/git-practice.git git-practice2
 //}
 
 次に、VSCodeのワークスペースに2つ目のローカルリポジトリのディレクトリを追加します。
